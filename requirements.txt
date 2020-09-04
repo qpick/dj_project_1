@@ -1,0 +1,5 @@
+# Django
+Django==3.0
+
+# Markdown utils
+markdown2==2.3.9
