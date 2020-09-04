@@ -1,4 +1,4 @@
-# dj_project_1
+# Wiki Project
 
 A Wikipedia-like online encyclopedia implemented in Django
 
