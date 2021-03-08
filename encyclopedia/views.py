@@ -1,14 +1,8 @@
 import random
-from django import forms
 from django.shortcuts import render, redirect
 from markdown2 import markdown
 from . import util
-
-
-
-class NewEntryForm(forms.Form):
-    title = forms.CharField()
-    description = forms.CharField(widget=forms.Textarea())
+from .forms import *
 
 
 def index(request):
@@ -37,7 +31,24 @@ def new_entry(request):
 
 
 def save_entry(request):
-    pass
+    if request.method == 'POST':
+        form = NewEntryForm(request.POST)
+
+        if form.is_valid():
+            title = form.cleaned_data['title']
+            content = form.cleaned_data['content']
+
+            if util.get_entry(title) is None:
+                util.save_entry(title, content)
+                return redirect('entry_detail', entry=title)
+            else:
+                context = {
+                    'message': f'Entry with title "{title}" already exists!',
+                    'form': form,
+                }
+                return render(request, 'encyclopedia/new_entry.html', context)
+    else:
+        return redirect('index')
 
 
 def edit_entry(request):
