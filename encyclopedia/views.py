@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponse
 from markdown2 import markdown
 from . import util
 from django import forms
@@ -10,19 +10,25 @@ class NewEntryForm(forms.Form):
 
 
 def index(request):
+
     return render(request, 'encyclopedia/index.html', {
         'entries': util.list_entries()
     })
 
 
 def entry_detail(request, entry):
-    return render(request, 'encyclopedia/entry_detail.html', {
-        'entry': markdown(util.get_entry(entry))
-    })
+    get_entry = util.get_entry(entry)
+
+    if not get_entry:
+        return render(request, 'encyclopedia/entry_does_not_exists.html', {'entry': entry})
+    else:
+        entry = _markdown_to_html_converter(get_entry)
+        return render(request, 'encyclopedia/entry_detail.html', {'entry': entry})
 
 
 def new_entry(request):
     form = NewEntryForm()
+
     return render(request, 'encyclopedia/new_entry.html', {
         'form': form
     })
@@ -41,4 +47,23 @@ def random_entry(request):
 
 
 def search_entry(request):
-    pass
+    search = request.GET.get('q')
+    get_entry = util.get_entry(search)
+
+    if not get_entry:
+        entries = util.list_entries()
+
+        get_similar_entries = []
+        for entry in entries:
+            if search.lower() in entry.lower():
+                get_similar_entries.append(entry)
+
+        return render(request, 'encyclopedia/index.html', {'entries': get_similar_entries})
+    else:
+        entry = _markdown_to_html_converter(get_entry)
+        return render(request, 'encyclopedia/entry_detail.html', {'entry': entry})
+
+
+def _markdown_to_html_converter(entry):
+    """Convert markdown to html format, return html format."""
+    return markdown(entry)
