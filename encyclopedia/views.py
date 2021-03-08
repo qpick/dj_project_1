@@ -1,7 +1,9 @@
-from django.shortcuts import render, HttpResponse
+import random
+from django import forms
+from django.shortcuts import render, redirect
 from markdown2 import markdown
 from . import util
-from django import forms
+
 
 
 class NewEntryForm(forms.Form):
@@ -43,11 +45,14 @@ def edit_entry(request):
 
 
 def random_entry(request):
-    pass
+    entries = util.list_entries()
+    find_random_entry = random.choice(entries)
+
+    return redirect('entry_detail', entry=find_random_entry)
 
 
 def search_entry(request):
-    search = request.GET.get('q')
+    search = request.GET.get('q').strip()
     get_entry = util.get_entry(search)
 
     if not get_entry:
