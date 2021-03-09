@@ -6,7 +6,6 @@ from .forms import *
 
 
 def index(request):
-
     return render(request, 'encyclopedia/index.html', {
         'entries': util.list_entries()
     })
@@ -18,8 +17,9 @@ def entry_detail(request, entry):
     if not get_entry:
         return render(request, 'encyclopedia/entry_does_not_exists.html', {'entry': entry})
     else:
+        entry_title = entry
         entry = _markdown_to_html_converter(get_entry)
-        return render(request, 'encyclopedia/entry_detail.html', {'entry': entry})
+        return render(request, 'encyclopedia/entry_detail.html', {'entry': entry, 'entry_title': entry_title})
 
 
 def new_entry(request):
@@ -30,15 +30,32 @@ def new_entry(request):
     })
 
 
+def edit_entry(request, title):
+    entry = util.get_entry(title)
+    if entry:
+        form = NewEntryForm()
+        form.fields['title'].initial = title
+        form.fields["title"].widget = forms.HiddenInput()
+        form.fields['content'].initial = entry
+
+        return render(request, 'encyclopedia/edit_entry.html', {
+            'form': form
+        })
+    else:
+        return redirect('index')
+
+
 def save_entry(request):
     if request.method == 'POST':
         form = NewEntryForm(request.POST)
 
+        print(request.POST)
         if form.is_valid():
             title = form.cleaned_data['title']
             content = form.cleaned_data['content']
+            editing = True if request.POST.get('editing') else False
 
-            if util.get_entry(title) is None:
+            if util.get_entry(title) is None or editing:
                 util.save_entry(title, content)
                 return redirect('entry_detail', entry=title)
             else:
@@ -49,10 +66,6 @@ def save_entry(request):
                 return render(request, 'encyclopedia/new_entry.html', context)
     else:
         return redirect('index')
-
-
-def edit_entry(request):
-    pass
 
 
 def random_entry(request):
