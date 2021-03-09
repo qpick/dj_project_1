@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from markdown2 import markdown
 from . import util
 from .forms import *
+from .custom import *
 
 
 def index(request):
@@ -95,4 +96,6 @@ def search_entry(request):
 
 def _markdown_to_html_converter(entry):
     """Convert markdown to html format, return html format."""
-    return markdown(entry)
+
+    return (CustomMarkdown(entry)).convert()
+    # return markdown(entry)
