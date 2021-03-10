@@ -36,3 +36,9 @@ textarea {
 .sidebar h2 {
     margin-top: 5px;
 }
+
+.edit-button {
+    color: #fff;
+    padding-left: 30px;
+    padding-right: 30px;
+}

@@ -1,0 +1,16 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    Entry
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="text-right col-6">
+           <a href="{% url 'edit_entry' entry_title %}" role="button" class="btn btn-info edit-button">Edit</a>
+        </div>
+    </div>
+
+    {{ entry|safe }}
+
+{% endblock %}
