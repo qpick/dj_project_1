@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from markdown2 import markdown
 from . import util
 from .forms import *
-from .custom import *
+from .markdown_zg import *
 
 
 def index(request):
@@ -33,17 +33,17 @@ def new_entry(request):
 
 def edit_entry(request, title):
     entry = util.get_entry(title)
-    if entry:
-        form = NewEntryForm()
-        form.fields['title'].initial = title
-        form.fields["title"].widget = forms.HiddenInput()
-        form.fields['content'].initial = entry
-
-        return render(request, 'encyclopedia/edit_entry.html', {
-            'form': form
-        })
-    else:
+    if not entry:
         return redirect('index')
+
+    form = NewEntryForm()
+    form.fields['title'].initial = title
+    form.fields["title"].widget = forms.HiddenInput()
+    form.fields['content'].initial = entry
+
+    return render(request, 'encyclopedia/edit_entry.html', {
+        'form': form
+    })
 
 
 def save_entry(request):
