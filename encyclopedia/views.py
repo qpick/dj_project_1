@@ -97,5 +97,9 @@ def search_entry(request):
 def _markdown_to_html_converter(entry):
     """Convert markdown to html format, return html format."""
 
-    return (CustomMarkdown(entry)).convert()
-    # return markdown(entry)
+    #Custom converter
+    #converter = (CustomMarkdown()).convert(entry)
+
+    converter = markdown(entry)
+
+    return converter
