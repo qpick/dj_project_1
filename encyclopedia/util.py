@@ -1,7 +1,11 @@
 import re
 
+from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
+from markdown2 import markdown
+
+from encyclopedia.markdown_zg import CustomMarkdown
 
 
 def list_entries():
@@ -35,3 +39,10 @@ def get_entry(title):
         return f.read().decode("utf-8")
     except FileNotFoundError:
         return None
+
+
+def _markdown_to_html_converter(entry):
+    """Convert markdown to html format, return html format."""
+
+    # Custom converter
+    return CustomMarkdown().convert(entry) if settings.MARKDOWN_ZG_PARSER == 'custom' else markdown(entry)
